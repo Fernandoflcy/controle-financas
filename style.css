@@ -1,0 +1,395 @@
+/* Reset e estilo básico */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f7f7f7;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
+/* Container centralizado */
+.container {
+  width: 100%;
+  max-width:100%;
+  margin: 20px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Título principal */
+h1 {
+  text-align: center;
+  color: #28a745;
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Estilo dos inputs e botão */
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.inputs label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.inputs input,
+.inputs select,
+button {
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  color: #333;
+  background-color: #fafafa;
+}
+
+.inputs input[type="text"],
+.inputs input[type="number"],
+.inputs select {
+  background-color: #f9f9f9;
+}
+
+.inputs input:focus,
+.inputs select:focus {
+  border-color: #28a745;
+  background-color: #fff;
+}
+
+button {
+  background-color: #28a745;
+  color: white;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #218838;
+}
+
+button:focus {
+  outline: none;
+  border: 2px solid #218838;
+}
+
+/* Estilo para o saldo */
+.result {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 20px;
+  color: #333;
+  text-align: center;
+  padding: 12px 0;
+  background-color: #e9f7e9;
+  border-radius: 8px;
+}
+/* Estilo para o contêiner do filtro */
+.filtro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Menor espaçamento entre os elementos */
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px; /* Diminuir a largura do filtro */
+  margin: 0 auto;
+  justify-content: sbetween;
+}
+
+/* Estilo para os rótulos */
+.filtro label {
+  font-weight: bold;
+  font-size: 13px;
+  color: #333;
+}
+
+/* Estilo para os inputs e select */
+.filtro input,
+.filtro select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 13px;
+  width: 120px; /* Reduzir a largura dos inputs */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Estilo para o botão de filtro */
+.filtro button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  font-size: 13px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Efeito de hover no botão */
+.filtro button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+/* Responsividade: ajustes para telas pequenas */
+@media (max-width: 600px) {
+  .filtro {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filtro input,
+  .filtro select {
+    width: 100%; /* Inputs e selects ocupam a largura total em telas pequenas */
+  }
+
+  .filtro button {
+    width: 100%; /* O botão também ocupa a largura total */
+  }
+}
+
+.filtro input[type="date"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fafafa;
+}
+
+.filtro button {
+  padding: 12px 18px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.filtro button:hover {
+  background-color: #0056b3;
+}
+
+/* Histórico */
+#historico {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+#historico li {
+  background-color: #f8f9fa;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-left: 5px solid #28a745;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+#historico li.saida {
+  border-left-color: #dc3545;
+}
+
+#historico li span {
+  font-size: 14px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+#historico li .valor {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+#historico li.nenhum {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  font-size: 18px;
+  padding: 20px;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  .inputs {
+    gap: 12px;
+  }
+
+  button {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .result {
+    font-size: 18px;
+  }
+
+  #historico li {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+/* Estilos para Botões e Importante (Limpeza) */
+.botoes {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.botoes button {
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.botoes button:first-child {
+  background-color: #ffc107;
+  color: white;
+}
+
+.botoes button:first-child:hover {
+  background-color: #e0a800;
+}
+
+.botoes button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.botoes button:last-child:hover {
+  background-color: #c82333;
+}
+
+/* Gráficos */
+.graficos {
+  display: flex;
+  gap: 30px;
+  margin-top: 40px;
+  justify-content: space-between;
+  flex-direction: column;
+  
+
+}
+
+.graficos canvas {
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Container para os toasts */
+#toast-container {
+  position: fixed; /* Fixa o container no topo da tela */
+  top: 20px; /* Distância do topo da página */
+  right: 20px; /* Distância da borda direita */
+  z-index: 1000; /* Garante que fique sobre outros elementos da página */
+  display: flex;
+  flex-direction: column; /* Organiza os toasts de forma vertical */
+  gap: 10px; /* Espaço entre os toasts */
+  max-height: 90vh; /* Limita a altura do container */
+  overflow-y: auto; /* Adiciona rolagem vertical caso o número de toasts ultrapasse a altura do container */
+  width: auto; /* A largura vai se ajustar ao conteúdo */
+  padding: 10px; /* Espaço interno ao redor dos toasts */
+}
+
+/* Estilo para os toasts */
+.toast {
+  background-color: #28a745; /* Cor de fundo do toast */
+  color: white; /* Cor do texto */
+  padding: 10px 20px; /* Espaçamento interno */
+  border-radius: 5px; /* Bordas arredondadas */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra suave */
+  animation: fadeInOut 3s forwards; /* Animação de entrada e saída */
+  width: 300px; /* Largura fixa para os toasts */
+}
+
+/* Animação para os toasts */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10%, 90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+/* Animação de fade para os toasts */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10%, 90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10%, 90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 600px) {
+  .graficos-{
+    padding: 10px;
+    gap: 15px; /* Menor espaçamento entre os gráficos */
+  }
+
+  .grafico {
+    height: 300px; /* Menor altura para dispositivos móveis */
+  }
+}

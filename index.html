@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Finanças</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Inclusão do Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <!-- Inclusão do Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Link para o CSS do Toastify -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <!-- Script do Toastify -->
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Título -->
+    <h1>Controle de Finanças</h1>
+    <div id="toast-container"></div>
+    <!-- Formulário para entrada de dados -->
+    <div class="inputs">
+      <label for="descricao">Descrição</label>
+      <input type="text" id="descricao" placeholder="Ex.: Salário, Transporte">
+      <label for="valor">Valor</label>
+      <input type="number" id="valor" placeholder="Ex.: 5000">
+      <label for="tipo">Tipo</label>
+      <select id="tipo">
+        <option value="entrada">Entrada</option>
+        <option value="saida">Saída</option>
+      </select>
+      <button onclick="adicionarTransacao()">Adicionar</button>
+    </div>
+    
+    <!-- Saldo atual -->
+    <div class="result">
+      <span id="resultado">0,00</span>
+    </div>
+
+    <!-- Filtro de histórico -->
+    <div class="filtro">
+      <label for="dataInicio">De:</label>
+      <input type="date" id="dataInicio">
+      <label for="dataFim">Até:</label>
+      <input type="date" id="dataFim">
+      <label for="tipoFiltro">Tipo de Transação</label>
+      <select id="tipoFiltro">
+        <option value="todos">Todos</option>
+        <option value="entrada">Entrada</option>
+        <option value="saida">Saída</option>
+      </select>
+      <button onclick="filtrarTransacoes()">Filtrar</button>
+    </div>
+  
+    <!-- Histórico de transações -->
+    <h3>Histórico</h3>
+    <ul id="historico">
+      <li class="nenhum">Nenhuma transação registrada.</li>
+    </ul>
+    
+    <!-- Gráficos -->
+    <div class="graficos">
+      <canvas id="graficoTransacoes" width="400" height="400"></canvas>
+      <canvas id="graficoSaldo" width="400" height="400"></canvas>
+    </div>
+
+    <!-- Botões de exportação e limpeza -->
+    <div class="botoes">
+      <button onclick="exportarCSV()">Exportar CSV</button>
+      <button onclick="limparDados()">Limpar Dados</button>
+    </div>
+  </div>
+
+  <script>
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAeJUWs_lqxUD9q9CsEkF0HssCvbOGkDbI",
+      authDomain: "tchauleno-financeiro.firebaseapp.com",
+      projectId: "tchauleno-financeiro",
+      storageBucket: "tchauleno-financeiro.appspot.com",
+      messagingSenderId: "1098805943231",
+      appId: "1:1098805943231:web:3f8a8e6a19c3ac1633df0a",
+      measurementId: "G-EGLP8VD26K"
+    };
+    
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Função para adicionar transação
+    function adicionarTransacao() {
+      const descricao = document.getElementById("descricao").value;
+      const valor = parseFloat(document.getElementById("valor").value);
+      const tipo = document.getElementById("tipo").value;
+
+      if (!descricao || !valor || !tipo) {
+        Toastify({
+          text: "Por favor, preencha todos os campos!",
+          backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+        }).showToast();
+        return;
+      }
+
+      const transacao = {
+        descricao: descricao,
+        valor: valor,
+        tipo: tipo,
+        data: new Date()
+      };
+
+      db.collection("transacoes").add(transacao)
+        .then(() => {
+          Toastify({
+            text: "Transação adicionada com sucesso!",
+            backgroundColor: "linear-gradient(to right, #56ab2f, #a8e063)",
+          }).showToast();
+          carregarTransacoes();
+        })
+        .catch(error => {
+          console.error("Erro ao adicionar transação: ", error);
+        });
+    }
+
+    // Função para carregar transações do Firebase
+    function carregarTransacoes() {
+      db.collection("transacoes").get()
+        .then(querySnapshot => {
+          let transacoes = [];
+          querySnapshot.forEach(doc => {
+            transacoes.push(doc.data());
+          });
+          exibirHistorico(transacoes);
+          gerarGraficos(transacoes);
+        })
+        .catch(error => {
+          console.error("Erro ao carregar transações: ", error);
+        });
+    }
+
+    // Função para exibir histórico de transações
+    function exibirHistorico(transacoes) {
+      const historico = document.getElementById("historico");
+      historico.innerHTML = "";
+
+      if (transacoes.length === 0) {
+        historico.innerHTML = "<li class='nenhum'>Nenhuma transação registrada.</li>";
+        return;
+      }
+
+      transacoes.forEach(transacao => {
+        const li = document.createElement("li");
+        li.textContent = `${transacao.descricao}: ${transacao.valor} (${transacao.tipo})`;
+        historico.appendChild(li);
+      });
+    }
+
+    // Função para gerar gráficos
+    function gerarGraficos(transacoes) {
+      let entradas = transacoes.filter(t => t.tipo === "entrada").reduce((acc, t) => acc + t.valor, 0);
+      let saidas = transacoes.filter(t => t.tipo === "saida").reduce((acc, t) => acc + t.valor, 0);
+      
+      // Gráfico de transações (usando gráfico de barras)
+      const ctxTransacoes = document.getElementById("graficoTransacoes").getContext("2d");
+      new Chart(ctxTransacoes, {
+        type: "bar",
+        data: {
+          labels: ["Entradas", "Saídas"],
+          datasets: [{
+            label: "Transações",
+            data: [entradas, saidas],
+            backgroundColor: ["#4CAF50", "#F44336"]
+          }]
+        }
+      });
+
+      // Gráfico de saldo (usando gráfico de pizza)
+      const ctxSaldo = document.getElementById("graficoSaldo").getContext("2d");
+      new Chart(ctxSaldo, {
+        type: "pie",
+        data: {
+          labels: ["Saldo"],
+          datasets: [{
+            label: "Saldo",
+            data: [entradas - saidas],
+            backgroundColor: ["#2196F3"]
+          }]
+        }
+      });
+
+      // Exibir saldo
+      document.getElementById("resultado").textContent = (entradas - saidas).toFixed(2);
+    }
+
+    // Função para filtrar transações
+    function filtrarTransacoes() {
+      const dataInicio = document.getElementById("dataInicio").value;
+      const dataFim = document.getElementById("dataFim").value;
+      const tipoFiltro = document.getElementById("tipoFiltro").value;
+
+      db.collection("transacoes")
+        .where("data", ">=", new Date(dataInicio))
+        .where("data", "<=", new Date(dataFim))
+        .where("tipo", "==", tipoFiltro)
+        .get()
+        .then(querySnapshot => {
+          let transacoes = [];
+          querySnapshot.forEach(doc => {
+            transacoes.push(doc.data());
+          });
+          exibirHistorico(transacoes);
+          gerarGraficos(transacoes);
+        })
+        .catch(error => {
+          console.error("Erro ao filtrar transações: ", error);
+        });
+    }
+
+    // Função para exportar CSV (exemplo simples)
+    function exportarCSV() {
+      // Lógica de exportação de CSV
+    }
+
+    // Função para limpar dados (exemplo simples)
+    function limparDados() {
+      // Lógica de limpeza de dados
+    }
+
+    // Carregar transações ao iniciar
+    carregarTransacoes();
+  </script>
+</body>
+</html>
